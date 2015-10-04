@@ -1,0 +1,9 @@
+{
+    "webhook-url": "https://hooks.slack.com/services/T0000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXX",
+
+    "payload": {
+        "text": "Public IP: 0.0.0.0\nPrivate IP: 0.0.0.0",
+        "username": "crust",
+        "channel": "#pie-crust"
+    }
+}
