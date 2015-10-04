@@ -17,5 +17,7 @@ To solve this problem, this script will post a message in a [Slack](https://slac
 
 Simply run `install.sh`:
 ```bash
+$ git clone https://github.com/MSOE-Supermileage/crust.git
+$ cd crust
 $ ./install.sh
 ```
