@@ -1,0 +1,12 @@
+[Unit]
+Description=Raspberry Pi definition agent
+Documentation=https://github.com/MSOE-Supermileage/crust
+After=network-online.target syslog.target
+
+[Service]
+Type=idle
+ExecStart=/opt/crust.py
+ExecReload=/opt/crust.py
+
+[Install]
+WantedBy=default.target

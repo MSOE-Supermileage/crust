@@ -19,8 +19,17 @@ pip_install() {
     sudo pip install $pypi_package
 }
 
+# install required programs
 arch_install python3 python
 arch_install pip python-pip
 pip_install requests
 
-# symlink the file to the correct directory/setup systemd
+# symlink the executable for the systemd service so that it can easily be found
+sudo ln -vis $PWD/crust.py /opt/crust.py
+
+# symlink the systemd service file
+sudo ln -vis $PWD/crust.service /etc/systemd/system/crust.service
+# make systemd aware of the new crust.service
+systemctl daemon-reload
+# start the new crust.service
+systemctl start crust.service
