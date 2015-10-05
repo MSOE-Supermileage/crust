@@ -7,16 +7,16 @@ arch_install() {
     local package=$2
 
     if test "$(command -v $cmd)" == 0; then
-        echo "Installing $2"
-        sudo pacman -S $2
+        echo "Installing $package"
+        sudo pacman -S $package
     else
-        echo "$1 already installed"
+        echo "$cmd already installed"
     fi
 }
 
 pip_install() {
     local pypi_package=$1
-    sudo pip install $1
+    sudo pip install $pypi_package
 }
 
 arch_install python3 python
