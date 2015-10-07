@@ -12,6 +12,7 @@ To solve this problem, this script will post a message in a [Slack](https://slac
 
 - Python 3
 - [Requests](http://requests.readthedocs.org/)
+- [systemd](http://freedesktop.org/wiki/Software/systemd/) (for auto-running at network online)
 
 ## Install
 
