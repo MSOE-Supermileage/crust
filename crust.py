@@ -12,7 +12,7 @@ def get_private_ip():
 
     platforms = platform.system()
     if platforms == 'Linux':
-        private_ip = os.system('hostname -i').
+        private_ip = os.system('hostname -i')
     else:
         pass
 
