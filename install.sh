@@ -25,7 +25,9 @@ arch_install pip python-pip
 pip_install requests
 
 # symlink the executable for the systemd service so that it can easily be found
-sudo ln -vis $PWD/crust.py /opt/crust.py
+sudo mkdir -p /opt/crust
+sudo ln -vis $PWD/crust.py /opt/crust/crust.py
+sudo ln -vis $PWD/config.json /opt/crust/config.json
 
 # symlink the systemd service file
 sudo ln -vis $PWD/crust.service /etc/systemd/system/crust.service
