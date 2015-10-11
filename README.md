@@ -16,9 +16,12 @@ To solve this problem, this script will post a message in a [Slack](https://slac
 
 ## Install
 
-Simply run `install.sh`:
+Run `install.sh`:
+
 ```bash
-$ git clone https://github.com/MSOE-Supermileage/crust.git
-$ cd crust
-$ ./install.sh
+git clone https://github.com/MSOE-Supermileage/crust.git
+cd crust
+./install.sh
 ```
+
+Next, go to the "Configure Integrations" page for the Slack team. Switch to the "Configured Integrations" tab. Select "Incoming Hooks" and the one that says "Posts to #pie-crust as crust". Copy the Webhook URL, under Integration Settings, and paste it into `"webhook-url"` in `config.json`.
