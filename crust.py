@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 import json
-import os
 import platform
 import requests
+import subprocess
 import syslog
 
 
@@ -12,7 +12,10 @@ def get_private_ip():
 
     platforms = platform.system()
     if platforms == 'Linux':
-        private_ip = os.system('hostname -i')
+        proc = subprocess.run(['hostname', '-i'],
+                              stdout=subprocess.PIPE,
+                              universal_newlines=True)
+        private_ip = proc.stdout
     else:
         pass
 
