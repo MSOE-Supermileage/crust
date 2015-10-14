@@ -14,6 +14,18 @@ arch_install() {
     fi
 }
 
+apt-get_install() {
+    local cmd=$1
+    local package=$2
+
+    if test "$(command -v $cmd)" == 0; then
+        echo "Installing $package"
+        sudo apt-get install $package
+    else
+        echo "$cmd already installed"
+    fi
+}
+
 pip_install() {
     local pypi_package=$1
     sudo pip install $pypi_package
