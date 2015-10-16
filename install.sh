@@ -5,7 +5,7 @@ arch_install() {
     local package=$2
 
     if command -v $cmd &>/dev/null; then
-        echo "Installing $package"
+        echo "Installing $package for $cmd"
         sudo pacman -S $package
     else
         echo "$cmd already installed"
@@ -17,7 +17,7 @@ apt-get_install() {
     local package=$2
 
     if command -v $cmd &>/dev/null; then
-        echo "Installing $package"
+        echo "Installing $package for $cmd"
         sudo apt-get install $package
     else
         echo "$cmd already installed"
