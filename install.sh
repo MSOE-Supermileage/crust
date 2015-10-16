@@ -4,7 +4,7 @@ arch_install() {
     local cmd=$1
     local package=$2
 
-    if test "$(command -v $cmd)" == 0; then
+    if command -v $cmd &>/dev/null; then
         echo "Installing $package"
         sudo pacman -S $package
     else
@@ -16,7 +16,7 @@ apt-get_install() {
     local cmd=$1
     local package=$2
 
-    if test "$(command -v $cmd)" == 0; then
+    if command -v $cmd &>/dev/null; then
         echo "Installing $package"
         sudo apt-get install $package
     else
@@ -30,11 +30,11 @@ pip_install() {
 }
 
 # install required programs
-if test "$(command -v apt-get)" == 0; then
+if command -v apt-get &>/dev/null; then
     # install packages for apt-get based systems
     apt-get_install python3 python3
     apt-get_install pip python-pip
-elif test "$(command -v pacman)" == 0; then
+elif command -v pacman &>/dev/null; then
     # install packages for pacman based systems
     arch_install python3 python
     arch_install pip python-pip
