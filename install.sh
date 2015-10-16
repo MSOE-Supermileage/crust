@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-#
-# NOTE: this script only works with the Arch Linux package manager
 
 arch_install() {
     local cmd=$1
@@ -32,8 +30,23 @@ pip_install() {
 }
 
 # install required programs
-arch_install python3 python
-arch_install pip python-pip
+if test "$(command -v apt-get)" == 0; then
+    # install packages for apt-get based systems
+    apt-get_install python3 python3
+    apt-get_install pip python-pip
+elif test "$(command -v pacman)" == 0; then
+    # install packages for pacman based systems
+    arch_install python3 python
+    arch_install pip python-pip
+else
+    echo "Sorry, we do not support automatic pacakge installion for your package manager"
+    read -p "Do you want to continue anyway? " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Nn]$ ]]; then
+        exit 1
+    fi
+fi
+# install required Python modules
 pip_install requests
 
 # symlink the executable for the systemd service so that it can easily be found
