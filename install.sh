@@ -39,7 +39,7 @@ elif command -v pacman &>/dev/null; then
     arch_install python3 python
     arch_install pip python-pip
 else
-    echo "Sorry, we do not support automatic pacakge installion for your package manager"
+    echo "Sorry, we do not support automatic pacakge installation for your package manager."
     read -p "Do you want to continue anyway? " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Nn]$ ]]; then
