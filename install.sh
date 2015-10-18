@@ -57,6 +57,6 @@ sudo ln -vis $PWD/config.json /opt/crust/config.json
 # symlink the systemd service file
 sudo ln -vis $PWD/crust.service /etc/systemd/system/crust.service
 # make systemd aware of the new crust.service
-systemctl daemon-reload
+sudo systemctl daemon-reload
 # start the new crust.service
-systemctl start crust.service
+sudo systemctl start crust.service
