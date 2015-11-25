@@ -33,7 +33,7 @@ pip_install() {
 if command -v apt-get &>/dev/null; then
     # install packages for apt-get based systems
     apt-get_install python3 python3
-    apt-get_install pip python-pip
+    apt-get_install pip3 python3-pip
 elif command -v pacman &>/dev/null; then
     # install packages for pacman based systems
     arch_install python3 python
