@@ -24,11 +24,6 @@ apt-get_install() {
     fi
 }
 
-pip_install() {
-    local pypi_package=$1
-    sudo pip install $pypi_package
-}
-
 # install required programs
 if command -v apt-get &>/dev/null; then
     # install packages for apt-get based systems
@@ -47,7 +42,7 @@ else
     fi
 fi
 # install required Python modules
-pip_install requests
+pip install -r requirements.txt
 
 # symlink the executable for the systemd service so that it can easily be found
 sudo mkdir -p /opt/crust
