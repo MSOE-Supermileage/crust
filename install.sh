@@ -54,4 +54,4 @@ sudo ln -vis $PWD/crust.service /etc/systemd/system/crust.service
 # make systemd aware of the new crust.service
 sudo systemctl daemon-reload
 # start the new crust.service
-sudo systemctl start crust.service
+sudo systemctl enable crust.service
