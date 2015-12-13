@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
-import json
+try: import simplejson as json
+except: import json
 import platform
 import requests
 import subprocess
 import syslog
+import socket
 
 
 def get_private_ip():
@@ -17,10 +19,12 @@ def get_private_ip():
 
     platforms = platform.system()
     if platforms == 'Linux':
-        proc = subprocess.run(['hostname', '-i'],
-                              stdout=subprocess.PIPE,
-                              universal_newlines=True)
-        private_ip = proc.stdout
+        #proc = subprocess.call(['hostname', '-i'],
+        #                      stdout=subprocess.PIPE,
+        #                      universal_newlines=True)
+        #private_ip = proc.stdout
+        # don't modify /etc/hosts
+        private_ip = socket.gethostbyname(socket.gethostname())
     else:
         pass
 
@@ -44,7 +48,7 @@ def get_public_ip():
 
 def main():
     try:
-        config = json.load(open('./config.json', 'rt'))
+        config = json.load(open('/opt/crust/config.json', 'rt'))
         url = config['webhook-url']
         payload = config['payload']
 

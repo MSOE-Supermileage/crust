@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 DIRNAME=$(dirname $0)
+URL=$1
 
 # assert run as root, otherwise exit
 if [ "$(id -u)" != "0" ]; then
@@ -8,11 +9,11 @@ if [ "$(id -u)" != "0" ]; then
 	exit 1
 fi
 
-arch_install() {
- 	local cmd=$1
+function arch_install {
+    local cmd=$1
     local package=$2
 
-    if command -v $cmd &>/dev/null; then
+    if ! command -v $cmd &>/dev/null; then
         echo "Installing $package for $cmd"
         pacman -S $package
     else
@@ -20,11 +21,11 @@ arch_install() {
     fi
 }
 
-apt-get_install() {
+function apt-get_install {
     local cmd=$1
     local package=$2
 
-    if command -v $cmd &>/dev/null; then
+    if ! command -v $cmd &>/dev/null; then
         echo "Installing $package for $cmd"
         apt-get install $package
     else
@@ -37,10 +38,16 @@ if command -v apt-get &>/dev/null; then
     # install packages for apt-get based systems
     apt-get_install python3 python3
     apt-get_install pip3 python3-pip
+
+    # install requiired python modules
+    pip3 install -r requirements.txt
 elif command -v pacman &>/dev/null; then
     # install packages for pacman based systems
     arch_install python3 python
     arch_install pip python-pip
+
+    # install required python modules
+    pip install -r requirements.txt
 else
     echo "Sorry, we do not support automatic package installation for your package manager."
     read -p "Do you want to continue anyway? " -n 1 -r
@@ -50,30 +57,25 @@ else
     fi
 fi
 
-# install required Python modules
-pip install -r requirements.txt
+sed -i 's|replaceme|'$URL'|g' $DIRNAME/config.json
 
-# symlink the executable for the systemd service so that it can easily be found
-mkdir -p /opt/crust
-ln -vis $PWD/crust.py /opt/crust/crust.py
-ln -vis $PWD/config.json /opt/crust/config.json
+ln -vis $(readlink -f $DIRNAME)/crust.py /opt/crust/crust.py
+ln -vis $(readlink -f $DIRNAME)/config.json /opt/crust/config.json
 
-# symlink the systemd service file
-ln -vis $PWD/crust.service /etc/systemd/system/crust.service
+# copy the actual service
+cp $DIRNAME/crust.service /etc/systemd/system/crust.service
+
 # make systemd aware of the new crust.service
 systemctl daemon-reload
 
-# start the new crust.service
+# enable the new crust.service to be run on boot
 systemctl enable crust.service
-systemctl start crust.service
 
-cat $DIRNAME/README.md | grep "Next,"
-read $URL
 echo
 if [[ -z $URL ]]; then
-	exit 0
+    exit 0;
 fi
 
-REPLACEME="https://hooks.slack.com/services/REPLACEME"
-sed -i 's|'$REPLACEME'|'$URL'|g' $DIRNAME/config.json
+# start service with new config
+systemctl start crust.service
 
