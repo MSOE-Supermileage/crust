@@ -1,12 +1,20 @@
 #!/usr/bin/env bash
 
+DIRNAME=$(dirname $0)
+
+# assert run as root, otherwise exit
+if [ "$(id -u)" != "0" ]; then
+	echo "Please run `$0` as root." 1>&2
+	exit 1
+fi
+
 arch_install() {
-    local cmd=$1
+ 	local cmd=$1
     local package=$2
 
     if command -v $cmd &>/dev/null; then
         echo "Installing $package for $cmd"
-        sudo pacman -S $package
+        pacman -S $package
     else
         echo "$cmd already installed"
     fi
@@ -18,7 +26,7 @@ apt-get_install() {
 
     if command -v $cmd &>/dev/null; then
         echo "Installing $package for $cmd"
-        sudo apt-get install $package
+        apt-get install $package
     else
         echo "$cmd already installed"
     fi
@@ -34,24 +42,38 @@ elif command -v pacman &>/dev/null; then
     arch_install python3 python
     arch_install pip python-pip
 else
-    echo "Sorry, we do not support automatic pacakge installation for your package manager."
+    echo "Sorry, we do not support automatic package installation for your package manager."
     read -p "Do you want to continue anyway? " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Nn]$ ]]; then
         exit 1
     fi
 fi
+
 # install required Python modules
 pip install -r requirements.txt
 
 # symlink the executable for the systemd service so that it can easily be found
-sudo mkdir -p /opt/crust
-sudo ln -vis $PWD/crust.py /opt/crust/crust.py
-sudo ln -vis $PWD/config.json /opt/crust/config.json
+mkdir -p /opt/crust
+ln -vis $PWD/crust.py /opt/crust/crust.py
+ln -vis $PWD/config.json /opt/crust/config.json
 
 # symlink the systemd service file
-sudo ln -vis $PWD/crust.service /etc/systemd/system/crust.service
+ln -vis $PWD/crust.service /etc/systemd/system/crust.service
 # make systemd aware of the new crust.service
-sudo systemctl daemon-reload
+systemctl daemon-reload
+
 # start the new crust.service
-sudo systemctl enable crust.service
+systemctl enable crust.service
+systemctl start crust.service
+
+cat $DIRNAME/README.md | grep "Next,"
+read $URL
+echo
+if [[ -z $URL ]]; then
+	exit 0
+fi
+
+REPLACEME="https://hooks.slack.com/services/REPLACEME"
+sed -i 's|'$REPLACEME'|'$URL'|g' $DIRNAME/config.json
+
