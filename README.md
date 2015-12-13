@@ -24,5 +24,5 @@ cd crust
 ./install.sh
 ```
 
-Next, go to the "Configure Integrations" page for the Slack team. Switch to the "Configured Integrations" tab. Select "Incoming Hooks" and the one that says "Posts to #pie-crust as crust". Copy the Webhook URL, under Integration Settings, and paste it into `"webhook-url"` in `config.json`.
+Next, go to the "Configure Integrations" page for the Slack team. Switch to the "Configured Integrations" tab. Select "Incoming Hooks" and the one that says "Posts to #pie-crust as crust". Copy the Webhook URL, under Integration Settings, and give it to the install script when it asks for it.
 
