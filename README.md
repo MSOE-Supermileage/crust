@@ -1,4 +1,7 @@
-# crust
+# crust  [![Build Status][tb]][tp]
+
+[tb]: https://travis-ci.org/MSOE-Supermileage/crust.svg?branch=master
+[tp]: https://travis-ci.org/MSOE-Supermileage/crust
 
 > Pies are defined by their crust.
 >
