@@ -1,9 +1,0 @@
-{
-    "webhook-url": "replaceme",
-
-    "payload": {
-        "text": "Public IP: 0.0.0.0\nPrivate IP: 0.0.0.0",
-        "username": "crust",
-        "channel": "#pie-crust"
-    }
-}

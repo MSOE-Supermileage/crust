@@ -5,8 +5,8 @@ URL=$1
 
 # assert run as root, otherwise exit
 if [ "$(id -u)" != "0" ]; then
-	echo "Please run `$0` as root." 1>&2
-	exit 1
+    echo "Please run `$0` as root." 1>&2
+    exit 1
 fi
 
 function arch_install {
@@ -57,10 +57,11 @@ else
     fi
 fi
 
-sed -i 's|replaceme|'$URL'|g' $DIRNAME/config.json
+# sed -i 's|replaceme|'$URL'|g' $DIRNAME/config.json
+echo $URL >> $DIRNAME/crust.conf
 
 ln -vis $(readlink -f $DIRNAME)/crust.py /opt/crust/crust.py
-ln -vis $(readlink -f $DIRNAME)/config.json /opt/crust/config.json
+ln -vis $(readlink -f $DIRNAME)/config.json /opt/crust/crust.conf
 
 # copy the actual service
 cp $DIRNAME/crust.service /etc/systemd/system/crust.service

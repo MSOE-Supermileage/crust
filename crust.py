@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-try: import simplejson as json
-except: import json
+import configparser
 import platform
 import requests
 import subprocess
@@ -48,15 +47,21 @@ def get_public_ip():
 
 def main():
     try:
-        config = json.load(open('/opt/crust/config.json', 'rt'))
-        url = config['webhook-url']
-        payload = config['payload']
+        # read off the crust config
+        slack_section = 'slack-webhook'
+        config = configparser.ConfigParser()
+        config.read('/opt/crust/crust.conf')
+        url = config[slack_section]['webhook-url']
 
+        # build the json object for post to slack
+        payload = {}
+        payload['username'] = config[slack_section]['username']
+        payload['channel'] = config[slack_section]['channel']
         payload['text'] = 'Public IP: {pub}\nPrivate IP: {priv}'.format(
             pub=get_public_ip(), priv=get_private_ip())
 
         r = requests.post(url, data=json.dumps(payload))
-    except json.JSONDecodeError as err:
+    except KeyError as err:
         message = 'Could not parse {file} as JSON. Failed at {pos}.'.format(
             file=err.doc, pos=err.pos)
         syslog.syslog(syslog.LOG_ERR, message)
@@ -64,3 +69,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
