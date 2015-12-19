@@ -1,24 +1,33 @@
 #!/usr/bin/env bash
 
-arch_install() {
+DIRNAME=$(dirname $0)
+URL=$1
+
+# assert run as root, otherwise exit
+if [ "$(id -u)" != "0" ]; then
+    echo "Please run `$0` as root." 1>&2
+    exit 1
+fi
+
+function arch_install {
     local cmd=$1
     local package=$2
 
-    if command -v $cmd &>/dev/null; then
+    if ! command -v $cmd &>/dev/null; then
         echo "Installing $package for $cmd"
-        sudo pacman -S $package
+        pacman -S $package
     else
         echo "$cmd already installed"
     fi
 }
 
-apt-get_install() {
+function apt-get_install {
     local cmd=$1
     local package=$2
 
-    if command -v $cmd &>/dev/null; then
+    if ! command -v $cmd &>/dev/null; then
         echo "Installing $package for $cmd"
-        sudo apt-get install $package
+        apt-get install $package
     else
         echo "$cmd already installed"
     fi
@@ -29,29 +38,47 @@ if command -v apt-get &>/dev/null; then
     # install packages for apt-get based systems
     apt-get_install python3 python3
     apt-get_install pip3 python3-pip
+
+    # install requiired python modules
+    pip3 install -r requirements.txt
 elif command -v pacman &>/dev/null; then
     # install packages for pacman based systems
     arch_install python3 python
     arch_install pip python-pip
+
+    # install required python modules
+    pip install -r requirements.txt
 else
-    echo "Sorry, we do not support automatic pacakge installation for your package manager."
+    echo "Sorry, we do not support automatic package installation for your package manager."
     read -p "Do you want to continue anyway? " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Nn]$ ]]; then
         exit 1
     fi
 fi
-# install required Python modules
-pip install -r requirements.txt
 
-# symlink the executable for the systemd service so that it can easily be found
-sudo mkdir -p /opt/crust
-sudo ln -vis $PWD/crust.py /opt/crust/crust.py
-sudo ln -vis $PWD/config.json /opt/crust/config.json
+if [[ -z $URL ]]; then
+    # sed -i 's|replaceme|'$URL'|g' $DIRNAME/config.json
+    echo "webhook-url=$URL" >> $DIRNAME/crust.conf;
+fi
 
-# symlink the systemd service file
-sudo ln -vis $PWD/crust.service /etc/systemd/system/crust.service
+ln -vis $(readlink -f $DIRNAME)/crust.py /opt/crust/crust.py
+ln -vis $(readlink -f $DIRNAME)/config.conf /opt/crust/crust.conf
+
+# copy the actual service
+cp $DIRNAME/crust.service /etc/systemd/system/crust.service
+
 # make systemd aware of the new crust.service
-sudo systemctl daemon-reload
-# start the new crust.service
-sudo systemctl enable crust.service
+systemctl daemon-reload
+
+# enable the new crust.service to be run on boot
+systemctl enable crust.service
+
+echo
+if [[ -z $URL ]]; then
+    exit 0;
+fi
+
+# start service with new config
+systemctl start crust.service
+

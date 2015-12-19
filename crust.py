@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
-import json
+import configparser
 import platform
 import requests
 import subprocess
 import syslog
+import socket
 
 
 def get_private_ip():
@@ -17,10 +18,12 @@ def get_private_ip():
 
     platforms = platform.system()
     if platforms == 'Linux':
-        proc = subprocess.run(['hostname', '-i'],
-                              stdout=subprocess.PIPE,
-                              universal_newlines=True)
-        private_ip = proc.stdout
+        #proc = subprocess.call(['hostname', '-i'],
+        #                      stdout=subprocess.PIPE,
+        #                      universal_newlines=True)
+        #private_ip = proc.stdout
+        # don't modify /etc/hosts
+        private_ip = socket.gethostbyname(socket.gethostname())
     else:
         pass
 
@@ -44,19 +47,25 @@ def get_public_ip():
 
 def main():
     try:
-        config = json.load(open('./config.json', 'rt'))
-        url = config['webhook-url']
-        payload = config['payload']
+        # read off the crust config
+        slack_section = 'slack-webhook'
+        config = configparser.ConfigParser()
+        config.read('/opt/crust/crust.conf')
+        url = config[slack_section]['webhook-url']
 
+        # build the json object for post to slack
+        payload = {}
+        payload['username'] = config[slack_section]['username']
+        payload['channel'] = config[slack_section]['channel']
         payload['text'] = 'Public IP: {pub}\nPrivate IP: {priv}'.format(
             pub=get_public_ip(), priv=get_private_ip())
 
         r = requests.post(url, data=json.dumps(payload))
-    except json.JSONDecodeError as err:
-        message = 'Could not parse {file} as JSON. Failed at {pos}.'.format(
-            file=err.doc, pos=err.pos)
+    except KeyError as err:
+        message = str(err)
         syslog.syslog(syslog.LOG_ERR, message)
 
 
 if __name__ == '__main__':
     main()
+
