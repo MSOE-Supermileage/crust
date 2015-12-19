@@ -63,7 +63,7 @@ if [[ -z $URL ]]; then
 fi
 
 ln -vis $(readlink -f $DIRNAME)/crust.py /opt/crust/crust.py
-ln -vis $(readlink -f $DIRNAME)/config.conf /opt/crust/crust.conf
+ln -vis $(readlink -f $DIRNAME)/crust.conf /opt/crust/crust.conf
 
 # copy the actual service
 cp $DIRNAME/crust.service /etc/systemd/system/crust.service

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import configparser
+import json
 import platform
 import requests
 import subprocess
@@ -23,11 +24,14 @@ def get_private_ip():
         #                      universal_newlines=True)
         #private_ip = proc.stdout
         # don't modify /etc/hosts
-        private_ip = socket.gethostbyname(socket.gethostname())
+        
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(('8.8.8.8', 80))
+        private_ip = s.getsockname()[0]
+        s.close()
+        return private_ip
     else:
         pass
-
-    return private_ip
 
 
 def get_public_ip():
@@ -51,6 +55,7 @@ def main():
         slack_section = 'slack-webhook'
         config = configparser.ConfigParser()
         config.read('/opt/crust/crust.conf')
+        print('Read config file')
         url = config[slack_section]['webhook-url']
 
         # build the json object for post to slack
@@ -64,7 +69,7 @@ def main():
     except KeyError as err:
         message = str(err)
         syslog.syslog(syslog.LOG_ERR, message)
-
+        print(err)
 
 if __name__ == '__main__':
     main()
