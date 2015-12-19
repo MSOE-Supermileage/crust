@@ -62,8 +62,7 @@ def main():
 
         r = requests.post(url, data=json.dumps(payload))
     except KeyError as err:
-        message = 'Could not parse {file} as JSON. Failed at {pos}.'.format(
-            file=err.doc, pos=err.pos)
+        message = str(err)
         syslog.syslog(syslog.LOG_ERR, message)
 
 

@@ -57,8 +57,10 @@ else
     fi
 fi
 
-# sed -i 's|replaceme|'$URL'|g' $DIRNAME/config.json
-echo "webhook-url=$URL" >> $DIRNAME/crust.conf
+if [[ -z $URL ]]; then
+    # sed -i 's|replaceme|'$URL'|g' $DIRNAME/config.json
+    echo "webhook-url=$URL" >> $DIRNAME/crust.conf;
+fi
 
 ln -vis $(readlink -f $DIRNAME)/crust.py /opt/crust/crust.py
 ln -vis $(readlink -f $DIRNAME)/config.conf /opt/crust/crust.conf
