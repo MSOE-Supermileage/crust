@@ -74,11 +74,6 @@ systemctl daemon-reload
 # enable the new crust.service to be run on boot
 systemctl enable crust.service
 
-echo
-if [[ -z $URL ]]; then
-    exit 0;
-fi
-
 # start service with new config
 systemctl start crust.service
 
