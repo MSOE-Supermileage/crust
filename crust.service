@@ -7,6 +7,9 @@ After=network-online.target syslog.target
 Type=idle
 ExecStart=/opt/crust/crust.py
 ExecReload=/opt/crust/crust.py
+Restart=on-failure
+RestartSec=10
 
 [Install]
 WantedBy=default.target
+
