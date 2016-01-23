@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-DIRNAME=$(dirname $0)
-URL=$1
+readonly DIRNAME=$(readlink -f $(dirname $0))
+readonly URL=$1
 
 # assert run as root, otherwise exit
 if [ "$(id -u)" != "0" ]; then
@@ -52,7 +52,7 @@ else
     echo "Sorry, we do not support automatic package installation for your package manager."
     read -p "Do you want to continue anyway? " -n 1 -r
     echo
-    if [[ $REPLY =~ ^[Nn]$ ]]; then
+    if [[ $REPLY =~ ^[Nn] ]]; then
         exit 1
     fi
 fi
@@ -62,8 +62,8 @@ if [[ -z $URL ]]; then
     echo "webhook-url=$URL" >> $DIRNAME/crust.conf;
 fi
 
-ln -vis $(readlink -f $DIRNAME)/crust.py /opt/crust/crust.py
-ln -vis $(readlink -f $DIRNAME)/crust.conf /opt/crust/crust.conf
+ln -vis $DIRNAME/crust.py /opt/crust/crust.py
+ln -vis $DIRNAME/crust.conf /opt/crust/crust.conf
 
 # copy the actual service
 cp $DIRNAME/crust.service /etc/systemd/system/crust.service
