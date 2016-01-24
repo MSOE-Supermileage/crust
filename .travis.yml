@@ -4,3 +4,4 @@ install:
   - ./build/install.sh
 script:
   - ./build/build.sh
+
