@@ -24,7 +24,7 @@ def get_private_ip():
         #                      universal_newlines=True)
         #private_ip = proc.stdout
         # don't modify /etc/hosts
-        
+
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(('8.8.8.8', 80))
         private_ip = s.getsockname()[0]
@@ -62,8 +62,8 @@ def main():
         payload = {}
         payload['username'] = config[slack_section]['username']
         payload['channel'] = config[slack_section]['channel']
-        payload['text'] = 'Public IP: {pub}\nPrivate IP: {priv}'.format(
-            pub=get_public_ip(), priv=get_private_ip())
+        payload['text'] = 'Hostname: {hn}\nPublic IP: {pub}\nPrivate IP: {priv}'.format(
+            hn=socket.gethostname(), pub=get_public_ip(), priv=get_private_ip())
 
         r = requests.post(url, data=json.dumps(payload))
     except KeyError as err:
