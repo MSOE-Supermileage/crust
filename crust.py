@@ -2,51 +2,41 @@
 
 import configparser
 import json
-import platform
-import requests
-import subprocess
-import syslog
 import socket
+import requests
+import syslog
 
 
 def get_private_ip():
-    """Return the private IP address of this Pi.
+    """Return the private IP address of this Pi, or 0.0.0.0 if the operation
+    failed.
 
-    The method for obtaining the private IP addresses, using `hostname` returns
-    a space-separated list of private IP addresses for each network interface.
+    The private IP is obtained by connecting to Google's DNS servers.
     """
-    private_ip = '0.0.0.0'
-
-    platforms = platform.system()
-    if platforms == 'Linux':
-        #proc = subprocess.call(['hostname', '-i'],
-        #                      stdout=subprocess.PIPE,
-        #                      universal_newlines=True)
-        #private_ip = proc.stdout
-        # don't modify /etc/hosts
-
+    try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(('8.8.8.8', 80))
         private_ip = s.getsockname()[0]
         s.close()
         return private_ip
-    else:
-        pass
+    except OSError as err:
+        syslog.syslog(syslog.LOG_ERR, str(err))
+        return '0.0.0.0'
 
 
 def get_public_ip():
-    """Return the public IP address of this device.
+    """Return the public IP address of this device, or 0.0.0.0 if the request
+    failed.
 
     Since this Pi is assumed to be connected to the Internet, we request our
     IP address from http://ipinfo.io/. This is much simplier than using system
     commands.
     """
-    public_ip = '0.0.0.0'
-
-    r = requests.get('http://ipinfo.io/json')
-    public_ip = r.json()['ip']
-
-    return public_ip
+    try:
+        return requests.get('http://ipinfo.io/ip').text.strip()
+    except requests.exceptions.RequestException as err:
+        syslog.syslog(syslog.LOG_ERR, str(err))
+        return '0.0.0.0'
 
 
 def main():
